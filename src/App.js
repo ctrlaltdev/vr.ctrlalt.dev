@@ -16,28 +16,47 @@ const Box = ({ color, size, scale, children, ...rest }) => {
   )
 }
 
-const Button = (props) => {
-  const [hover, setHover] = useState(false)
-  const [color, setColor] = useState(0x000000)
-
-  const onSelect = () => {
-    setColor((Math.random() * 0xffffff) | 0)
-  }
-
+const Title = ({ position }) => {
+  const fontURL = "https://fonts.gstatic.com/s/raleway/v19/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVsEpbCIPrcVIT9d0c8.woff"
   return (
-    <Interactive onSelect={onSelect} onHover={() => setHover(true)} onBlur={() => setHover(false)}>
-      <Box color={color} scale={hover ? [1.5, 1.5, 1.5] : [1, 1, 1]} size={[0.4, 0.1, 0.1]} {...props}>
-        <Text position={[0, 0, 0.05]} fontSize={0.05} color="#ffffff" anchorX="center" anchorY="middle">
-          CTRL ALT DEV
-        </Text>
-      </Box>
-    </Interactive>
+    <Text position={ position } fontSize={4} font={ fontURL } letterSpacing={0.125} color="#ffffff" anchorX="center" anchorY="middle">
+      YORICK DEMICHELIS
+    </Text>
   )
 }
 
-const Cube = ({ index = 0, color, size, scale = [1, 1, 1], thickness, ...rest }) => {
+const WireSquare = ({ dimensions, color, size, ...rest }) => {
+  const X = 0
+  const Y = 0
+  const Z = 0
+  const R = size / 2
+  return (
+    <group {...rest}>
+      <mesh position={[X + R, Y, Z + R]}>
+          <cylinderGeometry args={dimensions} />
+          <meshBasicMaterial color={ color } />
+      </mesh>
+      <mesh position={[X - R, Y, Z + R]}>
+          <cylinderGeometry args={dimensions} />
+          <meshBasicMaterial color={ color } />
+      </mesh>
+      <mesh position={[X + R, Y, Z - R]}>
+          <cylinderGeometry args={dimensions} />
+          <meshBasicMaterial color={ color } />
+      </mesh>
+      <mesh position={[X - R, Y, Z - R]}>
+          <cylinderGeometry args={dimensions} />
+          <meshBasicMaterial color={ color } />
+      </mesh>
+    </group>
+  )
+}
+
+const WireCube = ({ index = 0, color, size, scale = [1, 1, 1], thickness, ...rest }) => {
   const cube = useRef()
-  const geometry = new THREE.BoxGeometry(size, size, size)
+
+  const adjustedSize = size - (index * 2)
+  const edgeDimensions = [ thickness, thickness, adjustedSize, 24 ]
 
   useFrame(() => {
     if (index % 3 === 0) cube.current.rotation.x += 0.0005
@@ -47,32 +66,32 @@ const Cube = ({ index = 0, color, size, scale = [1, 1, 1], thickness, ...rest })
 
   return (
     <>
-      <mesh ref={ cube } scale={scale} {...rest}>
-        <lineSegments>
-          <edgesGeometry attach="geometry" args={[ geometry ]} />
-          <lineBasicMaterial attach="material" color={ color } linewidth={ thickness } transparent opacity={1} depthTest={false} side={ THREE.BackSide } />
-        </lineSegments>
-      </mesh>
+      <group ref={ cube } scale={scale} rotation-x={ Math.PI / (Math.random() + 1) } rotation-y={ Math.PI / (Math.random() + 1) } rotation-z={ Math.PI / (Math.random() + 1) }  {...rest}>
+        <WireSquare dimensions={ edgeDimensions } color={ color } size={ adjustedSize } />
+        <WireSquare dimensions={ edgeDimensions } color={ color } size={ adjustedSize } rotation-x={ Math.PI / 2 } />
+        <WireSquare dimensions={ edgeDimensions } color={ color } size={ adjustedSize } rotation-z={ Math.PI / 2 } />
+      </group>
     </>
   )
 }
 
-const WorldFrame = ({ size = 80, thickness = 2 }) => {
-  const colors = [0xffff00, 0xff00ff, 0x00ffff]
-  const cubes = colors.map((c, i) => <Cube key={c} index={i} color={c} size={size} thickness={thickness} />)
+const WorldFrame = ({ size = 80, thickness = 2, ...rest }) => {
+  const colors = [0x4D4D00, 0x4D004D, 0x004D4D]
+  const cubes = colors.map((c, i) => <WireCube key={c} index={i} color={c} size={size} thickness={thickness} {...rest} />)
   return cubes
 }
 
 const Scene = () => {
   return (
     <>
-      <Stars saturation={1} fade />
+      {/* <Stars saturation={1} fade /> */}
 
       <ambientLight intensity={0.2} />
       <pointLight position={[0, 30, 20]} />
 
-      <WorldFrame size={ 40 } thickness={ 10 } />
-      <Button position={[0, 2, -1]} />
+      <WorldFrame size={ 80 } thickness={ 0.25 } />
+
+      <Title position={[0, 1.5, -20]} />
 
       <DefaultXRControllers />
       <Hands />
@@ -93,7 +112,7 @@ const App = () => {
   return (
     <div className='Home'>
       <VRCanvas>
-        <color attach="background" args={["#050505"]} />
+        <color attach="background" args={["#1A1A1A"]} />
         {/* <fog color="#161616" attach="fog" near={1} far={15} /> */}
 
         <Suspense fallback={<Html center>Loading.</Html>}>
