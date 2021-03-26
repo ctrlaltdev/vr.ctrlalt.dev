@@ -1,11 +1,11 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 import './reset.css'
-import App from './App'
+import World from './World'
 
 ReactDOM.render(
   <React.StrictMode>
-    <App />
+    <World />
   </React.StrictMode>,
   document.getElementById('root')
 )

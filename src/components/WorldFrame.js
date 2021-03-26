@@ -1,29 +1,5 @@
-import * as THREE from "three"
-import React, { Suspense, useState, useRef } from 'react'
+import { useRef } from 'react'
 import { useFrame } from 'react-three-fiber'
-import { VRCanvas, Interactive, Hands, DefaultXRControllers } from '@react-three/xr'
-import { Html, Text, Stars } from '@react-three/drei'
-import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import './App.css'
-
-const Box = ({ color, size, scale, children, ...rest }) => {
-  return (
-    <mesh scale={scale} {...rest}>
-      <boxBufferGeometry args={size} />
-      <meshPhongMaterial color={color} />
-      {children}
-    </mesh>
-  )
-}
-
-const Title = ({ position }) => {
-  const fontURL = "https://fonts.gstatic.com/s/raleway/v19/1Ptxg8zYS_SKggPN4iEgvnHyvveLxVsEpbCIPrcVIT9d0c8.woff"
-  return (
-    <Text position={ position } fontSize={4} font={ fontURL } letterSpacing={0.125} color="#ffffff" anchorX="center" anchorY="middle">
-      YORICK DEMICHELIS
-    </Text>
-  )
-}
 
 const WireSquare = ({ dimensions, color, size, ...rest }) => {
   const X = 0
@@ -81,48 +57,4 @@ const WorldFrame = ({ size = 80, thickness = 2, ...rest }) => {
   return cubes
 }
 
-const Scene = () => {
-  return (
-    <>
-      {/* <Stars saturation={1} fade /> */}
-
-      <ambientLight intensity={0.2} />
-      <pointLight position={[0, 30, 20]} />
-
-      <WorldFrame size={ 80 } thickness={ 0.25 } />
-
-      <Title position={[0, 1.5, -20]} />
-
-      <DefaultXRControllers />
-      <Hands />
-    </>
-  )
-}
-
-const PostProcessings = ({ enabled = false }) => {
-  if (!enabled) return null
-  return (
-    <EffectComposer>
-      {/* <Bloom luminanceThreshold={0} luminanceSmoothing={0.5} height={500} /> */}
-    </EffectComposer>
-  )
-}
-
-const App = () => {
-  return (
-    <div className='Home'>
-      <VRCanvas>
-        <color attach="background" args={["#1A1A1A"]} />
-        {/* <fog color="#161616" attach="fog" near={1} far={15} /> */}
-
-        <Suspense fallback={<Html center>Loading.</Html>}>
-          <Scene />
-        </Suspense>
-
-        <PostProcessings />
-      </VRCanvas>
-    </div>
-  )
-}
-
-export default App
+export default WorldFrame
