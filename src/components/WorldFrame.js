@@ -1,5 +1,4 @@
 import { useRef } from 'react'
-import { useFrame } from 'react-three-fiber'
 
 const WireSquare = ({ dimensions, color, size, ...rest }) => {
   const X = 0
@@ -33,12 +32,6 @@ const WireCube = ({ index = 0, color, size, scale = [1, 1, 1], thickness, ...res
 
   const adjustedSize = size - (index * 2)
   const edgeDimensions = [ thickness, thickness, adjustedSize, 24 ]
-
-  useFrame(() => {
-    if (index % 3 === 0) cube.current.rotation.x += 0.0005
-    if (index % 3 === 1) cube.current.rotation.y += 0.0005
-    if (index % 3 === 2) cube.current.rotation.z += 0.0005
-  })
 
   return (
     <>

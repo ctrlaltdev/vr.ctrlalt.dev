@@ -1,0 +1,68 @@
+on:
+  workflow_dispatch:
+    branches:
+      - main
+  push:
+    branches:
+      - main
+
+name: Deploy
+
+env:
+  NEXT_TELEMETRY_DEBUG: 1
+
+jobs:
+  deploy:
+    name: Build and Deploy
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: checkout
+      uses: actions/checkout@v2
+
+    - name: create deployment
+      uses: chrnorm/deployment-action@releases/v1
+      id: deployment
+      with:
+        token: ${{ github.token }}
+        target_url: "https://vr.ctrlalt.dev"
+        environment: "Website"
+
+    - name: install
+      run: npm ci
+
+    - name: build
+      run: npm run build
+
+    - name: Configure AWS
+      uses: aws-actions/configure-aws-credentials@v1
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ${{ secrets.AWS_DEFAULT_REGION }}
+
+    - name: Upload files
+      run: |
+        aws s3 sync ./build/ s3://vr.ctrlalt.dev/ --delete
+
+    - name: Invalidate Cache
+      run: |
+        aws cloudfront create-invalidation --distribution-id EFMJC4GLPUI1A --paths "/*"
+
+    - name: Deployment success
+      if: success()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: "${{ github.token }}"
+        target_url: "https://vr.ctrlalt.dev"
+        state: "success"
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}
+
+    - name: Deployment failure
+      if: failure()
+      uses: chrnorm/deployment-status@releases/v1
+      with:
+        token: "${{ github.token }}"
+        target_url: "https://vr.ctrlalt.dev"
+        state: "failure"
+        deployment_id: ${{ steps.deployment.outputs.deployment_id }}

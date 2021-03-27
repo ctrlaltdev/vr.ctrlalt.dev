@@ -1,11 +1,13 @@
 import React, { Suspense } from 'react'
 
-import { VRCanvas, Hands, DefaultXRControllers, useXR } from '@react-three/xr'
+import VRCanvas from './components/CustomXRCanvas'
+import { Hands, DefaultXRControllers, useXR } from '@react-three/xr'
 import { Stars, Loader } from '@react-three/drei'
 
 import Light from './components/Light'
 import WorldFrame from './components/WorldFrame'
 import Title from './components/Title'
+import Skills from './components/Skills'
 
 import PostProcessing from './components/PostProcessing'
 
@@ -16,13 +18,16 @@ const Scene = () => {
 
   return (
     <>
-      { isPresenting && 
+      { isPresenting ? 
         <Suspense fallback={null}>
-          {/* <Stars saturation={1} fade /> */}
           <WorldFrame size={ 80 } thickness={ 0.25 } />
 
-          <Title position={[0, 1.5, -40]} />
+          <Title position={[0, 6, -20]} size={3} letterSpacing={ 0.125 } color="#ffffff" />
+
+          <Skills position={[ 0, 1, -5 ]} />
         </Suspense>
+        :
+        <Stars saturation={1} fade />
       }
     </>
   )
