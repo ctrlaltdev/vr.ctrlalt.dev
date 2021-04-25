@@ -37,7 +37,7 @@
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
     "react-scripts": "^4.0.3",
-    "react-three-fiber": "^5.3.19",
+    "react-three-fiber": "^5.3.21",
     "three": "^0.126.1"
   }
 }
