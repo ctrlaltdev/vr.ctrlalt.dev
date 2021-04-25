@@ -1,5 +1,5 @@
 import { VRButton } from '../utils/VRButton'
-import { Canvas } from 'react-three-fiber'
+import { Canvas } from '@react-three/fiber'
 import { XR, InteractionManager } from '@react-three/xr'
 
 const XRCanvas = ({ children, ...rest }) => {
